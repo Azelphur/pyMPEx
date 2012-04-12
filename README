@@ -1,0 +1,7 @@
+This is a command line (And maybe GUI in the future) interface to MPEx
+To use, first of all you will need to get python-gnupg.
+Download it from here http://code.google.com/p/python-gnupg/ then run
+python setup.py install to install it.
+once you have done this, you can run commands in the syntax listed at
+http://polimedia.us/bitcoin/faq.html using mpex.py, for example
+./mpex.py STAT
