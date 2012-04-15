@@ -9,7 +9,7 @@ class MPEx:
     def __init__(self):
         self.gpg = gnupg.GPG()
         self.mpex_url = 'http://polimedia.us/bitcoin/mpex.php'
-        self.mpex_fingerprint = '8DDE8C2B4DE2278A95C3D65B9214FC6BF1B69921'
+        self.mpex_fingerprint = 'F1B69921'
         self.passphrase = None
 
     def command(self, command):
