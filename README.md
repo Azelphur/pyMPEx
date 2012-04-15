@@ -11,9 +11,12 @@ This is a command line front end to MPEx. It is also a simple library for commun
 ##From command line
 
 >$ ./mpex.py STAT
-Enter your GPG passphrase:
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+
+>Enter your GPG passphrase:
+
+>-----BEGIN PGP SIGNED MESSAGE-----
+
+>Hash: SHA1
 
 >Holdings for Alfie Day (fingerprint AF97CD440E9F6124753BADFF61AFBDB270AC7F3E)
 Issued today, Sunday the 15th of April 2012 at 07:53:42 PM (0.85963600 1334519622)
