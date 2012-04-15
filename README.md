@@ -11,7 +11,7 @@ This is a command line front end to MPEx. It is also a simple library for commun
 ##From command line
 
 >$ ./mpex.py STAT
-Enter your GPG passphrase: 
+Enter your GPG passphrase:
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
