@@ -41,7 +41,8 @@ VbYO51QAGTV81rGdkcBxWtM=
 ##As a library
 ```python
 >>> from mpex import MPEx
->>> mpex = MPEx('My_GPG_Passphrase')
+>>> mpex = MPEx()
+>>> mpex.passphrase = 'My_GPG_Passphrase'
 >>> mpex.command('STAT')
 '-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA1\n\nHoldings for...
 ```
