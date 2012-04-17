@@ -27,7 +27,7 @@ class MPEx:
     def checkKey(self):
         keys = self.gpg.list_keys()
         for key in keys:
-            if key['fingerprint'] == self.mpex_fingerprint:
+            if key['fingerprint'].endswith(self.mpex_fingerprint):
                 return True
         return False
 
