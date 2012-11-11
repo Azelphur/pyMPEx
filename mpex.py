@@ -21,6 +21,9 @@ class MPEx:
         response = urllib2.urlopen(req)
         result = response.read()
         reply = str(self.gpg.decrypt(result, passphrase=self.passphrase))
+        if not self.gpg.verify(reply):
+            print '!!!WARNING!!!'
+            print 'Invalid Signature, do not trust this data.'
         if reply == '': return None
         return reply
 
