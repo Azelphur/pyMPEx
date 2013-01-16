@@ -51,6 +51,9 @@ class MPEx:
             msg = msg + ", total " + str(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI) + "BTC"
         elif cmd[0] == 'WITHDRAW':
             msg = msg + ", " + str(Decimal(cmd[2])/SATOSHI) +"BTC"
+        elif cmd[0] in ('STAT','STATJSON'):
+            #mostly harmless
+            return True
         msg += " (y/n)?"
         res = raw_input(msg)
         return res == 'y'
