@@ -4,6 +4,8 @@ import gnupg
 import urllib
 import urllib2
 import sys
+from decimal import Decimal
+SATOSHI = Decimal('100000000.0')
 
 class MPEx:
     def __init__(self):
@@ -34,6 +36,17 @@ class MPEx:
                 return True
         return False
 
+    def confirm(self,command):
+        msg = "Execute '"+ command+"'"
+        cmd = command.split('|')
+        if cmd[0] in ('BUY','SELL'):
+            msg = msg + ", total " + str(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI) + "BTC"
+        elif cmd[0] == 'WITHDRAW':
+            msg = msg + ", " + str(Decimal(cmd[2])/SATOSHI) +"BTC"
+        msg += " (y/n)?"
+        res = raw_input(msg)
+        return res == 'y'
+
 if __name__ == '__main__':
     from getpass import getpass
     mpex = MPEx()
@@ -45,6 +58,8 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print 'Usage: mpex.py <command>'
         print 'Example: mpex.py STAT'
+        exit()
+    if not mpex.confirm(sys.argv[1]):
         exit()
     mpex.passphrase = getpass("Enter your GPG passphrase: ")
     reply = mpex.command(sys.argv[1])
