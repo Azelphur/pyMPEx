@@ -17,7 +17,7 @@ def parse_args():
     return args
 
 class MPEx:
-    def __init__(self, use_agent):
+    def __init__(self, use_agent = False):
         self.gpg = gnupg.GPG(use_agent=use_agent)
         self.mpex_url = 'http://mpex.co'
         self.mpex_fingerprint = 'F1B69921'
