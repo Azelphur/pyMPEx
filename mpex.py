@@ -5,7 +5,15 @@ import urllib
 import urllib2
 import sys
 from decimal import Decimal
+from argparse import ArgumentParser
 SATOSHI = Decimal('100000000.0')
+
+def parse_args():
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument("command", help="MPEx command. It is necessary to quote it because of '|' special character, like: \"BUY|S.MPOE|1|100000\" ")
+    parser.add_argument("-y","--noconfirm", help="disable confirmation prompt", action='store_true', required = False)
+    args = parser.parse_args()
+    return args
 
 class MPEx:
     def __init__(self):
@@ -49,20 +57,17 @@ class MPEx:
 
 if __name__ == '__main__':
     from getpass import getpass
+    args = parse_args()
     mpex = MPEx()
     if not mpex.checkKey():
         print 'You have not added MPExes keys. Please run...'
         print 'gpg --search-keys "F1B69921"'
         print 'gpg --sign-key F1B69921'
         exit()
-    if len(sys.argv) != 2:
-        print 'Usage: mpex.py <command>'
-        print 'Example: mpex.py STAT'
-        exit()
-    if not mpex.confirm(sys.argv[1]):
+    if not (args.noconfirm or mpex.confirm(args.command)):
         exit()
     mpex.passphrase = getpass("Enter your GPG passphrase: ")
-    reply = mpex.command(sys.argv[1])
+    reply = mpex.command(args.command)
     if reply == None:
         print 'Couldn\'t decode the reply from MPEx, perhaps you didn\'t sign the key? try running'
         print 'gpg --sign-key F1B69921'
