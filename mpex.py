@@ -18,6 +18,15 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def remove_exponent(d):
+    '''Remove exponent and trailing zeros.
+
+    >>> remove_exponent(Decimal('5E+3'))
+    Decimal('5000')
+
+    '''
+    return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
+
 class MPEx:
     def __init__(self, use_agent = False, logfile=True):
         self.gpg = gnupg.GPG(use_agent=use_agent)
@@ -58,9 +67,9 @@ class MPEx:
         msg = "Execute '"+ command+"'"
         cmd = command.split('|')
         if cmd[0] in ('BUY','SELL'):
-            msg = msg + ", total " + str(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI) + "BTC"
+            msg = msg + ", total " + str(remove_exponent(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI)) + "BTC"
         elif cmd[0] == 'WITHDRAW':
-            msg = msg + ", " + str(Decimal(cmd[2])/SATOSHI) +"BTC"
+            msg = msg + ", " + str(remove_exponent(Decimal(cmd[2])/SATOSHI)) +"BTC"
         elif cmd[0] in ('STAT','STATJSON'):
             #mostly harmless
             return True
