@@ -73,6 +73,9 @@ class MPEx:
         elif cmd[0] in ('STAT','STATJSON'):
             #mostly harmless
             return True
+        elif cmd[0] == 'PUSH' and cmd[1] == 'CxBTC':
+            msg = msg + ", " + str(remove_exponent(Decimal(cmd[3])/SATOSHI)) +"BTC"
+
         msg += " (y/n)?"
         res = raw_input(msg)
         return res == 'y'
