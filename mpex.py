@@ -12,18 +12,18 @@ def parse_args():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("command", help="MPEx command. It is necessary to quote it because of '|' special character, like: \"BUY|S.MPOE|1|100000\" ")
     parser.add_argument("-y","--noconfirm", help="disable confirmation prompt", action='store_true', required = False)
+    parser.add_argument("-a","--use_agent", help="use GPG agent instead of asking for passphrase", action='store_true', required = False)
     args = parser.parse_args()
     return args
 
 class MPEx:
-    def __init__(self):
-        self.gpg = gnupg.GPG()
+    def __init__(self, use_agent):
+        self.gpg = gnupg.GPG(use_agent=use_agent)
         self.mpex_url = 'http://mpex.co'
         self.mpex_fingerprint = 'F1B69921'
         self.passphrase = None
 
     def command(self, command):
-        if self.passphrase == None: return None
         signed_data = self.gpg.sign(command, passphrase=self.passphrase)
         encrypted_ascii_data = self.gpg.encrypt(str(signed_data), self.mpex_fingerprint, passphrase=self.passphrase)
         data = urllib.urlencode({'msg' : str(encrypted_ascii_data)})
@@ -58,7 +58,7 @@ class MPEx:
 if __name__ == '__main__':
     from getpass import getpass
     args = parse_args()
-    mpex = MPEx()
+    mpex = MPEx(args.use_agent)
     if not mpex.checkKey():
         print 'You have not added MPExes keys. Please run...'
         print 'gpg --search-keys "F1B69921"'
@@ -66,7 +66,8 @@ if __name__ == '__main__':
         exit()
     if not (args.noconfirm or mpex.confirm(args.command)):
         exit()
-    mpex.passphrase = getpass("Enter your GPG passphrase: ")
+    if not args.use_agent:
+        mpex.passphrase = getpass("Enter your GPG passphrase: ")
     reply = mpex.command(args.command)
     if reply == None:
         print 'Couldn\'t decode the reply from MPEx, perhaps you didn\'t sign the key? try running'
