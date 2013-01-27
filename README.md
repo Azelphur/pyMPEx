@@ -2,6 +2,7 @@
 This is a command line front end to MPEx. It is also a simple library for communication with MPEx.
 
 #Install/Usage:
+* pyMPEx requires python 2.7
 * [Get python-gnupg](http://code.google.com/p/python-gnupg/)
 * Make sure you have signed MPEx's key using "gpg --sign-key F1B69921"
 * Run ./mpex.py COMMAND
