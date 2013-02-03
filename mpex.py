@@ -68,7 +68,7 @@ class MPEx:
         res = raw_input(msg)
         return res == 'y'
 
-if __name__ == '__main__':
+def main():
     from getpass import getpass
     args = parse_args()
     if args.logfile in ('-' ,''):
@@ -95,3 +95,5 @@ if __name__ == '__main__':
         exit()
     print reply
 
+if __name__ == '__main__':
+  main()

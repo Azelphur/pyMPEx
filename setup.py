@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='pyMPEx',
       version='1.0',
@@ -32,4 +32,5 @@ setup(name='pyMPEx',
       author_email='support@azelphur.com',
       url='https://github.com/Azelphur/pyMPEx',
       py_modules=['mpex'],
-      requires=['gnupg'])
+      entry_points = {'console_scripts': ['mpex = mpex:main']},
+      install_requires=['python-gnupg'])
