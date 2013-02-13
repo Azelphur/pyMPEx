@@ -4,6 +4,7 @@ import gnupg
 import urllib
 import urllib2
 import sys
+import hashlib
 from decimal import Decimal
 from argparse import ArgumentParser
 from datetime import datetime
@@ -41,8 +42,13 @@ class MPEx:
 
     def command(self, command):
         if (self.log) :self.log.write(datetime.now().isoformat() + " " +command + "\n")
-        signed_data = self.gpg.sign(command, passphrase=self.passphrase)
-        encrypted_ascii_data = self.gpg.encrypt(str(signed_data), self.mpex_fingerprint, passphrase=self.passphrase)
+        signed_data = str(self.gpg.sign(command, passphrase=self.passphrase))
+        m = hashlib.md5()
+        m.update(signed_data)
+        md5d = m.hexdigest()
+        if (self.log) : self.log.write(datetime.now().isoformat() + " " +signed_data + "\nDigest/Track: " + md5d + "\n")
+        print 'Track: ' + md5d[0:4] + "\n"
+        encrypted_ascii_data = self.gpg.encrypt(signed_data, self.mpex_fingerprint, passphrase=self.passphrase)
         data = urllib.urlencode({'msg' : str(encrypted_ascii_data)})
         req = urllib2.Request(self.mpex_url, data)
         response = urllib2.urlopen(req)
