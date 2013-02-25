@@ -4,6 +4,7 @@ import gnupg
 import urllib
 import urllib2
 import sys
+import hashlib
 from decimal import Decimal
 from argparse import ArgumentParser
 from datetime import datetime
@@ -18,11 +19,20 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def remove_exponent(d):
+    '''Remove exponent and trailing zeros.
+
+    >>> remove_exponent(Decimal('5E+3'))
+    Decimal('5000')
+
+    '''
+    return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
+
 class MPEx:
     def __init__(self, use_agent = False, logfile=True):
         self.gpg = gnupg.GPG(use_agent=use_agent)
         self.mpex_url = 'http://mpex.co'
-        self.mpex_fingerprint = 'F1B69921'
+        self._mpex_fingerprint = ['F1B69921','CFE0F3E1']
         self.passphrase = None
         self.log = None
         if(logfile):
@@ -32,8 +42,13 @@ class MPEx:
 
     def command(self, command):
         if (self.log) :self.log.write(datetime.now().isoformat() + " " +command + "\n")
-        signed_data = self.gpg.sign(command, passphrase=self.passphrase)
-        encrypted_ascii_data = self.gpg.encrypt(str(signed_data), self.mpex_fingerprint, passphrase=self.passphrase)
+        signed_data = str(self.gpg.sign(command, passphrase=self.passphrase))
+        m = hashlib.md5()
+        m.update(signed_data)
+        md5d = m.hexdigest()
+        if (self.log) : self.log.write(datetime.now().isoformat() + " " +signed_data + "\nDigest/Track: " + md5d + "\n")
+        print 'Track: ' + md5d[0:4] + "\n"
+        encrypted_ascii_data = self.gpg.encrypt(signed_data, self.mpex_fingerprint(), passphrase=self.passphrase)
         data = urllib.urlencode({'msg' : str(encrypted_ascii_data)})
         req = urllib2.Request(self.mpex_url, data)
         response = urllib2.urlopen(req)
@@ -50,7 +65,7 @@ class MPEx:
     def checkKey(self):
         keys = self.gpg.list_keys()
         for key in keys:
-            if key['fingerprint'].endswith(self.mpex_fingerprint):
+            if key['fingerprint'].endswith(self.mpex_fingerprint()):
                 return True
         return False
 
@@ -58,17 +73,24 @@ class MPEx:
         msg = "Execute '"+ command+"'"
         cmd = command.split('|')
         if cmd[0] in ('BUY','SELL'):
-            msg = msg + ", total " + str(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI) + "BTC"
+            msg = msg + ", total " + str(remove_exponent(Decimal(cmd[2])*Decimal(cmd[3])/SATOSHI)) + "BTC"
         elif cmd[0] == 'WITHDRAW':
-            msg = msg + ", " + str(Decimal(cmd[2])/SATOSHI) +"BTC"
+            msg = msg + ", " + str(remove_exponent(Decimal(cmd[2])/SATOSHI)) +"BTC"
         elif cmd[0] in ('STAT','STATJSON'):
             #mostly harmless
             return True
+        elif cmd[0] == 'PUSH' and cmd[1] == 'CxBTC':
+            msg = msg + ", " + str(remove_exponent(Decimal(cmd[3])/SATOSHI)) +"BTC"
+
         msg += " (y/n)?"
         res = raw_input(msg)
         return res == 'y'
 
-def main():
+    def mpex_fingerprint(self):
+        """Use current MPEx key depending on date."""
+        return self._mpex_fingerprint[0] if datetime.utcnow() < datetime(2013, 3, 10, 23, 59, 59) else self.mpex_fingerprint[1]
+
+if __name__ == '__main__':
     from getpass import getpass
     args = parse_args()
     if args.logfile in ('-' ,''):
@@ -81,8 +103,8 @@ def main():
     mpex = MPEx(args.use_agent, logfile)
     if not mpex.checkKey():
         print 'You have not added MPExes keys. Please run...'
-        print 'gpg --search-keys "F1B69921"'
-        print 'gpg --sign-key F1B69921'
+        print 'gpg --search-keys "%s"' % mpex.mpex_fingerprint()
+        print 'gpg --sign-key %s' % mpex.mpex_fingerprint()
         exit()
     if not (args.noconfirm or mpex.confirm(args.command)):
         exit()
@@ -91,9 +113,6 @@ def main():
     reply = mpex.command(args.command)
     if reply == None:
         print 'Couldn\'t decode the reply from MPEx, perhaps you didn\'t sign the key? try running'
-        print 'gpg --sign-key F1B69921'
+        print 'gpg --sign-key %s' % mpex.mpex_fingerprint()
         exit()
     print reply
-
-if __name__ == '__main__':
-  main()
