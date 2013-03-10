@@ -88,7 +88,7 @@ class MPEx:
 
     def mpex_fingerprint(self):
         """Use current MPEx key depending on date."""
-        return self._mpex_fingerprint[0] if datetime.utcnow() < datetime(2013, 3, 10, 23, 59, 59) else self.mpex_fingerprint[1]
+        return self._mpex_fingerprint[0] if datetime.utcnow() < datetime(2013, 3, 9, 23, 59, 59) else self._mpex_fingerprint[1]
 if __name__ == '__main__':
     from getpass import getpass
     args = parse_args()
