@@ -16,6 +16,7 @@ def parse_args():
     parser.add_argument("-y","--noconfirm", help="disable confirmation prompt", action='store_true', required = False)
     parser.add_argument("-a","--use_agent", help="use GPG agent instead of asking for passphrase", action='store_true', required = False)
     parser.add_argument("-l","--logfile", help="append command, encrypted and decrypted output to this logfile. By default mpex.log in current directory is used. Use -l - to disable file logging completely.", required = False)
+    parser.add_argument("-m","--mpexurl", help="MPEx url ( default http://mpex.co )", default='http://mpex.co', required = False)
     args = parser.parse_args()
     return args
 
@@ -29,9 +30,10 @@ def remove_exponent(d):
     return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
 
 class MPEx:
-    def __init__(self, use_agent = False, logfile=True):
+    def __init__(self, use_agent = False, logfile=True, mpexurl = 'http://mpex.co'):
         self.gpg = gnupg.GPG(use_agent=use_agent)
-        self.mpex_url = 'http://mpex.co'
+        self.mpex_url = mpexurl
+
         self._mpex_fingerprint = ['F1B69921','CFE0F3E1']
         self.passphrase = None
         self.log = None
@@ -99,7 +101,7 @@ if __name__ == '__main__':
         logfile = True
     else:
         logfile = args.logfile
-    mpex = MPEx(args.use_agent, logfile)
+    mpex = MPEx(args.use_agent, logfile, mpexurl = args.mpexurl)
     if not mpex.checkKey():
         print 'You have not added MPExes keys. Please run...'
         print 'gpg --search-keys "%s"' % mpex.mpex_fingerprint()
