@@ -117,4 +117,3 @@ if __name__ == '__main__':
         print 'gpg --sign-key %s' % mpex.mpex_fingerprint()
         exit()
     print reply
-
