@@ -4,9 +4,9 @@ This is a command line front end to MPEx. It is also a simple library for commun
 #Install/Usage:
 * pyMPEx requires python 2.7
 * [Get python-gnupg](http://code.google.com/p/python-gnupg/)
-* Make sure you have signed MPEx's key using "gpg --sign-key F1B69921"
+* Make sure you have signed MPEx's key using "gpg --sign-key A57D509A"
 * Run ./mpex.py COMMAND
-* You can find a list of valid commands on the [MPEx FAQ](http://polimedia.us/bitcoin/faq.html)
+* You can find a list of valid commands on the [MPEx FAQ](http://mpex.co/faq.html)
 
 #Examples:
 ##From command line
