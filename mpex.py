@@ -34,7 +34,7 @@ class MPEx:
         self.gpg = gnupg.GPG(use_agent=use_agent)
         self.mpex_url = mpexurl
 
-        self._mpex_fingerprint = ['F1B69921','CFE0F3E1']
+        self._mpex_fingerprint = 'A57D509A'
         self.passphrase = None
         self.log = None
         if(logfile):
@@ -89,8 +89,8 @@ class MPEx:
         return res == 'y'
 
     def mpex_fingerprint(self):
-        """Use current MPEx key depending on date."""
-        return self._mpex_fingerprint[0] if datetime.utcnow() < datetime(2013, 3, 9, 23, 59, 59) else self._mpex_fingerprint[1]
+        """Use current MPEx key."""
+        return self._mpex_fingerprint
 if __name__ == '__main__':
     from getpass import getpass
     args = parse_args()
